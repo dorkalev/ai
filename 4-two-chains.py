@@ -43,7 +43,7 @@ def main():
         print("\nRhymed Question:", rhymed_response)
         
         # Second chain: List websites
-        info_response = info_chain.invoke({"question": user_input})
+        info_response = info_chain.invoke({"question": rhymed_response})
         print("\nWebsites with additional info:", info_response)
 
 if __name__ == "__main__":
