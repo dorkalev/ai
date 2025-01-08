@@ -19,14 +19,15 @@ rhyming_prompt = PromptTemplate(
     input_variables=["question"],
     template="Please rephrase the following question with rhyming: {question}"
 )
-rhyming_chain = LLMChain(llm=llm, prompt=rhyming_prompt)
+rhyming_chain = rhyming_prompt | llm
 
 # Second chain: List websites with additional information
 info_prompt = PromptTemplate(
     input_variables=["question"],
     template="List websites with additional information about: {question}"
 )
-info_chain = LLMChain(llm=llm, prompt=info_prompt)
+info_chain = info_prompt | llm
+
 
 def main():
     print("Welcome to the Local LLM Chat Interface! (Type 'quit' to exit)")
@@ -37,16 +38,13 @@ def main():
             print("Goodbye!")
             break
             
-        try:
-            # First chain: Rephrase with rhyming
-            rhymed_response = rhyming_chain.invoke({"question": user_input})
-            print("\nRhymed Question:", rhymed_response["text"])
-            
-            # Second chain: List websites
-            info_response = info_chain.invoke({"question": user_input})
-            print("\nWebsites with additional info:", info_response["text"])
-        except Exception as e:
-            print(f"An error occurred: {str(e)}")
+        # First chain: Rephrase with rhyming
+        rhymed_response = rhyming_chain.invoke({"question": user_input})
+        print("\nRhymed Question:", rhymed_response)
+        
+        # Second chain: List websites
+        info_response = info_chain.invoke({"question": user_input})
+        print("\nWebsites with additional info:", info_response)
 
 if __name__ == "__main__":
     main()

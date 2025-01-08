@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from langchain_openai import ChatOpenAI
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
@@ -12,7 +13,7 @@ prompt = PromptTemplate(
     template="Please answer the following question: {question}"
 )
 
-chain = LLMChain(llm=llm, prompt=prompt)
+chain = prompt | llm
 
 def main():
     print("Welcome to the GPT-4 Chat Interface! (Type 'quit' to exit)")
@@ -23,11 +24,8 @@ def main():
             print("Goodbye!")
             break
             
-        try:
-            response = chain.invoke({"question": user_input})
-            print("\nResponse:", response["text"])
-        except Exception as e:
-            print(f"An error occurred: {str(e)}")
+        response = chain.invoke({"question": user_input})
+        print("\nResponse:", response.content)
 
 if __name__ == "__main__":
     main()

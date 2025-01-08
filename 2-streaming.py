@@ -41,12 +41,7 @@ prompt = PromptTemplate(
 )
 
 # Create the chain
-chain = LLMChain(
-    llm=llm, 
-    prompt=prompt,
-    verbose=True
-)
-
+chain = prompt | llm
 def main():
     print("Welcome to the GPT-4 Chat Interface! (Type 'quit' to exit)")
     while True:
@@ -56,15 +51,12 @@ def main():
             print("Goodbye!")
             break
             
-        try:
-            print("\nResponse: ")
-            # Remove callbacks from here since they're now in the LLM
-            response = chain.invoke(
-                {"question": user_input}
-            )
-            print()  # Add newline after response
-        except Exception as e:
-            print(f"An error occurred: {str(e)}")
+        print("\nResponse: ")
+        # Remove callbacks from here since they're now in the LLM
+        response = chain.invoke(
+            {"question": user_input}
+        )
+        print()  # Add newline after response
 
 if __name__ == "__main__":
     main()

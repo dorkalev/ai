@@ -19,17 +19,17 @@ rhyming_prompt = PromptTemplate(
     input_variables=["question"],
     template="List websites with additional information about: {question}"
 )
-rhyming_chain = LLMChain(llm=llm, prompt=rhyming_prompt)
+rhyming_chain = rhyming_prompt | llm 
 
 # Second chain: List websites with additional information
 info_prompt = PromptTemplate(
     input_variables=["question"],
     template="Just give the URL for each of them: {question}"
 )
-info_chain = LLMChain(llm=llm, prompt=info_prompt)
+info_chain = info_prompt | llm 
 
 # Define the chains using | operator
-combined_chain =(
+combined_chain = (
     {"question": lambda x: x} | 
     rhyming_chain | 
     info_chain
@@ -44,12 +44,12 @@ def main():
             print("Goodbye!")
             break
             
-        try:
+        # try:
             # Run both chains in sequence using the pipe operator
-            responses = combined_chain.invoke(user_input)
-            print("\nWebsites with additional info:", responses["text"])
-        except Exception as e:
-            print(f"An error occurred: {str(e)}")
+        responses = combined_chain.invoke({"question": user_input})
+        print("\nWebsites with additional info:", responses)
+        # except Exception as e:
+        #     print(f"An error occurred: {str(e)}")
 
 if __name__ == "__main__":
     main()
