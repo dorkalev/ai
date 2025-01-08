@@ -2,7 +2,8 @@
 from langchain_openai import ChatOpenAI
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain.callbacks.base import BaseCallbackHandler
+from langchain_core.runnables import RunnablePassthrough
+
 from dotenv import load_dotenv
 import os
 
@@ -19,7 +20,7 @@ prompt = PromptTemplate(
 )
 
 # Create the chain
-chain = prompt | llm
+chain = {"question": RunnablePassthrough()} | prompt | llm
 def main():
     print("Welcome to the GPT-4 Chat Interface! (Type 'quit' to exit)")
     while True:
@@ -31,7 +32,7 @@ def main():
             
         print("\nResponse: ")
         # Remove callbacks from here since they're now in the LLM
-        for chunk in chain.stream({"question": user_input}):
+        for chunk in chain.stream(user_input):
             print(chunk.content, end="", flush=True)
         print()  # Add newline after response
 
