@@ -29,7 +29,7 @@ info_prompt = PromptTemplate(
 info_chain = info_prompt | llm 
 
 # Define the chains using | operator
-combined_chain = (
+composed_chain = (
     {"question": lambda x: x} | 
     rhyming_chain | 
     info_chain
@@ -46,7 +46,7 @@ def main():
             
         # try:
             # Run both chains in sequence using the pipe operator
-        responses = combined_chain.invoke({"question": user_input})
+        responses = composed_chain.invoke({"question": user_input})
         print("\nWebsites with additional info:", responses)
         # except Exception as e:
         #     print(f"An error occurred: {str(e)}")
