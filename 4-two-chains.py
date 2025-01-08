@@ -7,6 +7,7 @@
 from langchain_ollama import OllamaLLM
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
+from langchain_core.runnables import RunnablePassthrough
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -19,14 +20,14 @@ rhyming_prompt = PromptTemplate(
     input_variables=["question"],
     template="Please rephrase the following question with rhyming: {question}"
 )
-rhyming_chain = rhyming_prompt | llm
+rhyming_chain = {"question": RunnablePassthrough()} | rhyming_prompt | llm
 
 # Second chain: List websites with additional information
 info_prompt = PromptTemplate(
     input_variables=["question"],
     template="List websites with additional information about: {question}"
 )
-info_chain = info_prompt | llm
+info_chain = { "question": RunnablePassthrough() } | info_prompt | llm
 
 
 def main():
@@ -39,11 +40,11 @@ def main():
             break
             
         # First chain: Rephrase with rhyming
-        rhymed_response = rhyming_chain.invoke({"question": user_input})
+        rhymed_response = rhyming_chain.invoke(user_input)
         print("\nRhymed Question:", rhymed_response)
         
         # Second chain: List websites
-        info_response = info_chain.invoke({"question": rhymed_response})
+        info_response = info_chain.invoke(rhymed_response)
         print("\nWebsites with additional info:", info_response)
 
 if __name__ == "__main__":

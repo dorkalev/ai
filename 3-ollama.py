@@ -7,6 +7,8 @@
 from langchain_ollama import OllamaLLM
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -19,7 +21,7 @@ prompt = PromptTemplate(
     template="Please answer the following question: {question}"
 )
 
-chain = prompt | llm
+chain = {"question": RunnablePassthrough()} | prompt | llm
 
 def main():
     print("Welcome to the Local LLM Chat Interface! (Type 'quit' to exit)")
@@ -30,7 +32,7 @@ def main():
             print("Goodbye!")
             break
             
-        response = chain.invoke({"question": user_input})
+        response = chain.invoke(user_input)
         print("\nResponse:", response)
 
 if __name__ == "__main__":
