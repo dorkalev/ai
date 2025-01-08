@@ -20,7 +20,7 @@ prompt = PromptTemplate(
 )
 
 # Create the chain
-chain = {"question": RunnablePassthrough()} | prompt | llm
+chain = {"question": RunnablePassthrough()} | prompt | llm # RunnablePassthrough() is a placeholder for the input just like lambda x: x
 def main():
     print("Welcome to the GPT-4 Chat Interface! (Type 'quit' to exit)")
     while True:

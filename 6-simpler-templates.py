@@ -8,6 +8,7 @@ from langchain_ollama import OllamaLLM
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -20,18 +21,18 @@ rhyming_prompt = ChatPromptTemplate.from_template("""
 List websites with additional information about: {question}
 """)
 
-rhyming_chain = rhyming_prompt | llm 
+rhyming_chain = {"question": RunnablePassthrough() } | rhyming_prompt | llm 
 
 # Second chain: List websites with additional information
 info_prompt = ChatPromptTemplate.from_template("""
 Just give the URL for each of them: {question}
 """)
 
-info_chain = info_prompt | llm 
+info_chain = {"question": RunnablePassthrough() } | info_prompt | llm 
 
 # Define the chains using | operator
 composed_chain = (
-    {"question": lambda x: x} | 
+    {"question": RunnablePassthrough() } | 
     rhyming_chain | 
     info_chain
 )
@@ -47,7 +48,7 @@ def main():
             
         # try:
             # Run both chains in sequence using the pipe operator
-        responses = composed_chain.invoke({"question": user_input})
+        responses = composed_chain.invoke(user_input)
         print("\nWebsites with additional info:", responses)
         # except Exception as e:
         #     print(f"An error occurred: {str(e)}")
