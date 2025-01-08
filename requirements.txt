@@ -1,0 +1,10 @@
+# requirements.txt
+langchain
+pandas
+faiss-cpu
+langchain-community 
+langchain-openai
+python-dotenv
+openai
+langchain-core
+langchain-ollama
