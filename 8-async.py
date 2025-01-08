@@ -11,6 +11,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 
 from dotenv import load_dotenv
+import asyncio
 
 # Load environment variables
 load_dotenv()
@@ -36,5 +37,4 @@ async def main():
         print("\nResponse:", response)
 
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())
