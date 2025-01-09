@@ -8,3 +8,4 @@ python-dotenv
 openai
 langchain-core
 langchain-ollama
+justext
