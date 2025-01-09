@@ -17,7 +17,7 @@ from urllib.parse import urlparse, urlunparse
 load_dotenv()
 global_url = ["https://daff.co.il"]
 
-llm = OllamaLLM(model="llama2")
+llm = OllamaLLM(model="llama3.2") # or llama2
 
 prompt = PromptTemplate(
     input_variables=["question"],
