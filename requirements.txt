@@ -9,3 +9,6 @@ openai
 langchain-core
 langchain-ollama
 justext
+transformers
+typing
+scikit-learn
