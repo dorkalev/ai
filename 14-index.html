@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SSE Demo</title>
+    <style>
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #FFF;
+            border-bottom-color: #000;
+            border-radius: 50%;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        body { padding: 1rem;}
+        
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+
+</head>
+<body>
+    <h1>Multi LLM Chat Interface</h1>
+    <form id="form">
+        Ask LLM:<input type="text" id="question" name="question" required>
+        <button type="submit">Ask</button>
+    </form>
+    
+    <div id="response1">
+    </div>
+    
+    <script>
+        const form = document.getElementById('form');
+        const responseDiv1 = document.getElementById('response1');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            responseDiv1.innerHTML = '<h1>LLAMA2</h1><div class="loader"></div>';
+            const question = document.getElementById('question').value;
+            
+            const eventSource = new EventSource('/respond?question=' + encodeURIComponent(question));
+            
+            eventSource.onmessage = (event) => {
+                responseDiv1.querySelector('.loader').style.display = 'none';
+                responseDiv1.innerHTML += event.data;
+                console.log(event);
+            };
+            
+            eventSource.onerror = () => {
+                eventSource.close();
+            };
+        });
+    </script>
+</body>
+</html>

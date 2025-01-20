@@ -5,12 +5,8 @@ from flask_sse import sse
 import time
 
 from langchain_ollama import OllamaLLM
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI
-from langchain.chains import LLMChain
-from langchain.prompts import PromptTemplate
 from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 from itertools import zip_longest
