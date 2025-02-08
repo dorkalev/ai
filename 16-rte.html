@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html dir="rtl">
+<head>
+    <title>SSE Demo</title>
+    <style>
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #FFF;
+            border-bottom-color: #000;
+            border-radius: 50%;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        body { padding: 1rem;}
+        #popup {
+            display:none; position:absolute; background-color:white; border:1px solid #ccc; padding:10px;
+        }
+        #content {
+            min-height: 10em;
+            resize: vertical;
+            overflow-y: auto;
+            line-height: 1.5;
+            border: 1px solid #ccc;
+        }
+        .added { background-color: #d4edda; color: #155724; }
+        .removed { background-color: #f8d7da; color: #721c24; text-decoration: line-through; }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/diff@5.0.0/dist/diff.min.js"></script>
+
+</head>
+<body>
+    <!--textarea id="oldText" rows="10" cols="50" placeholder="Old text..."></textarea><br-->
+    <!--textarea id="newText" rows="10" cols="50" placeholder="New text..."></textarea><br-->
+    <!--button onclick="generateDiff()">Show Diff</button-->
+    <!--div contenteditable="true" id="diffOutput"></div-->
+    <h1>עבריתוס</h1>
+    <div contenteditable="true" id="content" name="content" required>אני אוהב שוקולד ועוגות גבינה</div>
+    <!-- Radio buttons for model selection -->
+    <div>
+        <label>
+            <input type="radio" name="model" value="llama2" >
+            Llama2
+        </label>
+        <label>
+            <input type="radio" name="model" value="gpt4" checked>
+            GPT-4
+        </label>
+        <label>
+            <input type="radio" name="model" value="debug">
+            Debug
+        </label>
+    </div>
+
+    <!-- Popup Form -->
+    <div id="popup" class="popup">
+        <form id="popupForm">
+            <textarea id="question" name="question" required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        function generateDiff(newText) {
+            // Create a word diff
+            const diff = Diff.diffWords(content_value, newText);
+
+            const diffOutput = diff.map(part => {
+                const className = part.added ? 'added' : part.removed ? 'removed' : '';
+                return `<span class="${className}">${part.value}</span>`;
+            }).join('');
+
+            content.innerHTML = diffOutput;
+        }
+
+        const content = document.getElementById('content');
+        const question = document.getElementById('question');
+        let selectionStart;
+        let selectionEnd;
+        let selectedText;
+        let preText;
+        let postText;
+        document.addEventListener('keydown', function(e) { 
+            if ((e.metaKey || e.altKey) && e.key === 'k') {
+                selectionStart = window.getSelection().anchorOffset;
+                selectionEnd = window.getSelection().focusOffset;
+                selectedText = content.innerHTML.substring(
+                    selectionStart,
+                    selectionEnd
+                );
+                if (selectedText) {
+                    console.log(selectionStart);
+                    console.log(selectionEnd);
+                    console.log('--------------------------------');
+                    preText = content.innerText.substring(0, selectionStart);
+                    postText = content.innerText.substring(selectionEnd);
+                    console.log(selectedText);
+                    popup.style.display = 'block';
+                } else {
+                    popup.style.display = 'none';
+                }
+            }
+        });
+
+        document.getElementById('popupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            ask();
+            popup.style.display = 'none';
+        });
+
+        // document.addEventListener('click', function(event) {
+        //     if (!content.selectionStart && !content.selectionEnd) {
+        //         popup.style.display = 'none';
+        //     }
+        // });
+    
+    const popupForm = document.getElementById('popupForm');
+    
+    let ret;
+    let content_value;
+    
+    const ask = function() {
+        content_value = content.innerText;
+        const model = document.querySelector('input[name="model"]:checked').value;
+        if (model == 'debug') {
+            return false;
+        }
+        
+        const urlParams = new URLSearchParams({
+            model,
+            selectedText,
+            content: content.innerText,
+            range: `${selectionStart}:${selectionEnd}`,
+            question: question.value
+        });
+        const eventSource = new EventSource('/respond?' + urlParams);
+        
+        let response = '';
+        
+        eventSource.onmessage = (event) => {
+            response += event.data;
+            content.innerText = preText + response + postText;
+        };
+        
+        eventSource.onerror = () => {
+            eventSource.close();
+            // Replace selected text with AI response
+            // const start = content.selectionStart;
+            // const end = content.selectionEnd;
+            // const currentText = content.innerText;
+            // content.innerText = currentText.substring(0, start) + response + currentText.substring(end);
+            popup.style.display = 'none';
+            // question.value = '';
+            console.log('err')
+        };
+    };
+</script>
+</body>
+</html>

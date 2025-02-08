@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SSE Demo</title>
+  <style>
+    .loader {
+      width: 48px;
+      height: 48px;
+      border: 5px solid #FFF;
+      border-bottom-color: #000;
+      border-radius: 50%;
+      box-sizing: border-box;
+      animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+    body { padding: 1rem;}
+    
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+
+</head>
+<body>
+  <h1>Ultimate SQLator</h1>
+  <form id="form">
+    Ask LLM:<input type="text" id="question" name="question" required>
+    <button type="submit">Ask</button>
+  </form>
+  
+  <div id="response1">
+  </div>
+  
+  <!-- Display the table variable here -->
+  <div id="content-container">
+    % for table_name, rows in tables_content.items():
+      <h3>${table_name} Content</h3>
+      % if rows:
+        <table>
+          <tbody>
+            % for row in rows:
+              <tr>
+                % for cell in row:
+                  <td>${cell if cell is not None else ''}</td>
+                % endfor
+              </tr>
+            % endfor
+          </tbody>
+        </table>
+      % else:
+        <p>No data in table</p>
+      % endif
+    % endfor
+  </div>
+  <div id="table-container">
+    % for table_name, columns in tables.items():
+      <h3>${table_name}</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Column ID</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Not Null</th>
+            <th>Default Value</th>
+            <th>Primary Key</th>
+          </tr>
+        </thead>
+        <tbody>
+          % for col in columns:
+            <tr>
+              <td>${col[0]}</td>
+              <td>${col[1]}</td>
+              <td>${col[2]}</td>
+              <td>${col[3]}</td>
+              <td>${col[4] if col[4] is not None else ''}</td>
+              <td>${'Yes' if col[5] == 1 else 'No'}</td>
+            </tr>
+          % endfor
+        </tbody>
+      </table>
+    % endfor
+  </div>
+  
+  <script src="17-sqlator.js"></script>
+</body>
+</html>
