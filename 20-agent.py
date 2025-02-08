@@ -44,8 +44,13 @@ def general_chat(state: AgentState) -> dict:
     for msg in messages:
         print(f"{'User' if isinstance(msg, HumanMessage) else 'AI'}: {msg.content}")
     
-    response = llm.invoke([messages[-1]])
-    return {"messages": messages + [AIMessage(content=response.content)], "next": END}
+    response_content = ""
+    for chunk in llm.stream([messages[-1]]):
+        content = chunk.content
+        print(content, end="", flush=True)
+        response_content += content
+    print()
+    return {"messages": messages + [AIMessage(content=response_content)], "next": END}
 
 def math_agent(state: AgentState) -> dict:
     """Handle mathematical queries."""
@@ -58,8 +63,13 @@ def math_agent(state: AgentState) -> dict:
     print("\n[MATH AGENT] Sending prompt to LLM:")
     print(math_prompt)
     
-    response = llm.invoke([HumanMessage(content=math_prompt)])
-    return {"messages": messages + [AIMessage(content=response.content)], "next": END}
+    response_content = ""
+    for chunk in llm.stream([HumanMessage(content=math_prompt)]):
+        content = chunk.content
+        print(content, end="", flush=True)
+        response_content += content
+    print()
+    return {"messages": messages + [AIMessage(content=response_content)], "next": END}
 
 def code_agent(state: AgentState) -> dict:
     """Handle programming related queries."""
@@ -72,8 +82,13 @@ def code_agent(state: AgentState) -> dict:
     print("\n[CODE AGENT] Sending prompt to LLM:")
     print(code_prompt)
     
-    response = llm.invoke([HumanMessage(content=code_prompt)])
-    return {"messages": messages + [AIMessage(content=response.content)], "next": END}
+    response_content = ""
+    for chunk in llm.stream([HumanMessage(content=code_prompt)]):
+        content = chunk.content
+        print(content, end="", flush=True)
+        response_content += content
+    print()
+    return {"messages": messages + [AIMessage(content=response_content)], "next": END}
 
 # Build the graph
 workflow = StateGraph(AgentState)
